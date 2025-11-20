@@ -1,19 +1,69 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTypewriter } from './hooks/useTypewriter';
 import { useProgress } from './hooks/useProgress';
-import { words } from './data/words';
+import { useLearnedWords } from './hooks/useLearnedWords';
+import { useSettings } from './hooks/useSettings';
+import { words } from './data/words'; // C2 English
+import { c1Words } from './data/c1-words';
+import { finnishB1Words } from './data/finnish-b1-words';
+import { finnishB2Words } from './data/finnish-b2-words';
 import { TypewriterDisplay } from './components/TypewriterDisplay';
+import { Navigation } from './components/Navigation';
+import { MemoryView } from './components/MemoryView';
+import { SettingsPanel } from './components/SettingsPanel';
 import { audioManager } from './utils/audio';
+import type { ViewMode, WordData } from './types';
 
 function App() {
   const { progress, incrementProgress, resetAll } = useProgress();
+  const { learnedWords, learnedWordsCount, addLearnedWord, clearLearnedWords, getLearnedWordsSorted } = useLearnedWords();
+  const { settings, updateLanguage, updateTranslationLanguage, updateEnglishLevel, updateFinnishLevel } = useSettings();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('learn');
+  const [showSettings, setShowSettings] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
+
+
+  // Get words based on current language and level settings
+  const wordsForLanguageAndLevel = useMemo((): WordData[] => {
+    if (settings.currentLanguage === 'finnish') {
+      return settings.finnishLevel === 'B1' ? finnishB1Words : finnishB2Words;
+    }
+
+    // English words
+    const englishWords = settings.englishLevel === 'C1' ? c1Words : words;
+
+    // Apply translation preference for English
+    return englishWords.map(word => ({
+      ...word,
+      // Use Chinese translation if selected and available, otherwise fall back to Japanese
+      translation: settings.translationLanguage === 'chinese' && word.translationChinese
+        ? word.translationChinese
+        : word.translation
+    }));
+  }, [settings.currentLanguage, settings.englishLevel, settings.finnishLevel, settings.translationLanguage]);
+
+  // Memoize words based on view mode to prevent unnecessary re-renders
+  const wordsForMode = useMemo((): WordData[] => {
+    if (viewMode === 'review') {
+      // Only show learned words in review mode
+      return learnedWords.map(lw => ({
+        word: lw.word,
+        translation: lw.translation,
+        definition: lw.definition
+      }));
+    }
+    // Default: show language-filtered words for 'learn' mode
+    return wordsForLanguageAndLevel;
+  }, [viewMode, learnedWords, wordsForLanguageAndLevel]);
 
   const { currentWord, typedText, isError, nextWord, reset: resetGame } = useTypewriter({
-    words,
-    onWordComplete: () => {
+    words: wordsForMode,
+    onWordComplete: (word) => {
       audioManager.playSuccessSound();
       incrementProgress();
+      addLearnedWord(word); // Track learned word
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
@@ -32,40 +82,126 @@ function App() {
     }
   }, [typedText, isError]);
 
-  const handleReset = () => {
-    if (confirm('Are you sure you want to reset all progress?')) {
-      resetAll();
+  const handleResetClick = () => {
+    setShowResetConfirm(true);
+  };
+
+  const confirmReset = () => {
+    resetAll();
+    clearLearnedWords();
+    resetGame();
+    setShowResetConfirm(false);
+    audioManager.playSuccessSound(); // Feedback for reset
+  };
+
+  const cancelReset = () => {
+    setShowResetConfirm(false);
+  };
+
+  const handleLanguageChange = (newLang: 'english' | 'finnish') => {
+    if (newLang === settings.currentLanguage) return;
+    setIsChangingLanguage(true);
+    setTimeout(() => {
+      updateLanguage(newLang);
+      setIsChangingLanguage(false);
+    }, 300);
+  };
+
+  const handleModeChange = (mode: ViewMode) => {
+    audioManager.playModeSwitchSound();
+    setViewMode(mode);
+    if (mode === 'learn' || mode === 'review') {
+      // Reset the game when switching to learn or review mode
       resetGame();
     }
   };
+
+  // Show memory view when in memory mode
+  if (viewMode === 'memory') {
+    return (
+      <div className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden">
+        <Navigation
+          currentMode={viewMode}
+          onModeChange={handleModeChange}
+          learnedCount={learnedWordsCount}
+        />
+        <div className="w-full pt-24 md:pt-32"> {/* Added padding for fixed nav */}
+          <MemoryView
+            learnedWords={getLearnedWordsSorted()}
+            onBack={() => setViewMode('learn')}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (!currentWord) return <div className="text-white">Loading...</div>;
 
   return (
     <div className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden">
 
-      {/* Header / Stats */}
-      <div className="absolute top-8 w-full flex justify-between items-center px-8 text-gray-500 font-mono text-sm">
-        <div className="flex gap-6">
-          <div>
-            <span className="block text-xs uppercase tracking-widest opacity-50">Learned</span>
-            <span className="text-xl text-cyan-400">{progress.wordsLearned}</span>
+      {/* Navigation */}
+      <Navigation
+        currentMode={viewMode}
+        onModeChange={handleModeChange}
+        learnedCount={learnedWordsCount}
+      />
+
+      {/* Header / Stats - Glass Panels */}
+      <div className="fixed top-20 md:top-24 left-0 right-0 flex flex-wrap justify-between items-start px-4 md:px-6 lg:px-12 z-10 animate-fade-in-up gap-2">
+        {/* Left Stats */}
+        <div className="flex gap-2 md:gap-3">
+          <div className="glass rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-lg">
+            <span className="block text-[10px] md:text-xs uppercase tracking-widest text-gray-500 mb-0.5 md:mb-1">Learned</span>
+            <span className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-cyan-300">
+              {progress.wordsLearned}
+            </span>
           </div>
-          <div>
-            <span className="block text-xs uppercase tracking-widest opacity-50">Streak</span>
-            <span className="text-xl text-purple-400">{progress.streak}</span>
+          <div className="glass rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-lg">
+            <span className="block text-[10px] md:text-xs uppercase tracking-widest text-gray-500 mb-0.5 md:mb-1">Streak</span>
+            <span className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+              {progress.streak}
+            </span>
           </div>
         </div>
-        <button
-          onClick={handleReset}
-          className="hover:text-red-400 transition-colors opacity-50 hover:opacity-100"
-        >
-          RESET
-        </button>
+
+        {/* Right Buttons */}
+        <div className="flex gap-2">
+          {/* Settings Button */}
+          <button
+            onClick={() => setShowSettings(true)}
+            className="glass-hover px-3 md:px-4 py-2 md:py-3 rounded-2xl text-gray-400 hover:text-cyan-400 
+                     transition-all duration-300 text-xs font-mono tracking-wider
+                     shadow-lg"
+            title="Settings"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+
+          {/* Reset Button */}
+          <button
+            onClick={handleResetClick}
+            className="glass-hover px-3 md:px-4 py-2 md:py-3 rounded-2xl text-gray-400 hover:text-red-400 
+                     transition-all duration-300 text-xs font-mono tracking-wider
+                     shadow-lg"
+            title="Reset all progress"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Main Display */}
-      <div className={`transition-all duration-300 ${showSuccess ? 'scale-110 brightness-125' : ''}`}>
+      <div className={`
+        transition-all duration-500 ease-out
+        ${showSuccess ? 'animate-success-burst' : ''}
+        ${isChangingLanguage ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}
+      `}>
         <TypewriterDisplay
           word={currentWord}
           typedText={typedText}
@@ -74,14 +210,62 @@ function App() {
       </div>
 
       {/* Footer / Instructions */}
-      <div className="absolute bottom-8 text-gray-600 text-xs font-mono opacity-50">
-        Type the word above. Correct keys only.
+      <div className="absolute bottom-8 text-center">
+        <div className="glass rounded-full px-6 py-2 shadow-lg">
+          <p className="text-gray-400 text-xs font-mono">
+            {viewMode === 'review'
+              ? `Reviewing ${learnedWordsCount} learned ${learnedWordsCount === 1 ? 'word' : 'words'}`
+              : 'Type the word above · Correct keys only'}
+          </p>
+        </div>
       </div>
 
-      {/* Success Overlay (Subtle) */}
+      {/* Success Overlay */}
       {showSuccess && (
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-          <div className="w-full h-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 animate-pulse" />
+        <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-pink-500/5 animate-pulse" />
+          <div className="absolute w-96 h-96 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-full blur-3xl animate-scale-in" />
+        </div>
+      )}
+
+      {/* Settings Panel */}
+      {showSettings && (
+        <SettingsPanel
+          currentLanguage={settings.currentLanguage}
+          translationLanguage={settings.translationLanguage}
+          englishLevel={settings.englishLevel}
+          finnishLevel={settings.finnishLevel}
+          onLanguageChange={handleLanguageChange}
+          onTranslationChange={updateTranslationLanguage}
+          onEnglishLevelChange={updateEnglishLevel}
+          onFinnishLevelChange={updateFinnishLevel}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in-up">
+          <div className="glass rounded-3xl p-8 max-w-md w-full shadow-2xl border-red-500/30">
+            <h3 className="text-2xl font-bold text-white mb-4">Reset Progress?</h3>
+            <p className="text-gray-300 mb-8">
+              This will delete all your learned words and reset your streak. This action cannot be undone.
+            </p>
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={cancelReset}
+                className="px-6 py-2 rounded-xl text-gray-300 hover:bg-white/10 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmReset}
+                className="px-6 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30 transition-all"
+              >
+                Yes, Reset
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
