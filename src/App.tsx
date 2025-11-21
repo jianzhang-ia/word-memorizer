@@ -212,7 +212,7 @@ function App() {
       <input
         ref={hiddenInputRef}
         type="text"
-        className="absolute opacity-0 top-0 left-0 h-0 w-0 pointer-events-none"
+        className="fixed opacity-0 top-1/2 left-1/2 h-0 w-0 pointer-events-none"
         value={inputValue}
         onChange={handleInputChange}
         autoFocus
