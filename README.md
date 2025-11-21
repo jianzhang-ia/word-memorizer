@@ -1,73 +1,63 @@
-# React + TypeScript + Vite
+# Word Memorizer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, aesthetic typing application designed to help you master vocabulary in multiple languages. Built with React, TypeScript, and Tailwind CSS, it combines a retro typewriter experience with a sleek glassmorphism UI.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🌍 Multi-Language Support
+- **English**: Master advanced vocabulary with **C1** and **C2** level word lists.
+  - **Translation Options**: Choose between **Japanese** and **Chinese** translations for English words.
+- **Finnish**: Learn Finnish vocabulary with **B1** and **B2** level collections.
+  - Includes English translations.
 
-## React Compiler
+### ⌨️ Immersive Typing Experience
+- **Typewriter Aesthetic**: Satisfying typing sounds and visual feedback.
+- **Interactive UI**: Glassmorphism design with smooth animations and gradients.
+- **Mobile Friendly**: Optimized for both desktop and mobile devices with a responsive layout.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🧠 Learning Modes
+- **Learn Mode**: Practice new words from your selected language and level.
+- **Review Mode**: Reinforce your memory by re-typing words you've already learned.
+- **Memory View**: Browse your collection of learned words to track your progress.
 
-## Expanding the ESLint configuration
+### 📊 Progress Tracking
+- **Stats**: Real-time counter of words learned.
+- **Persistence**: Your progress is saved automatically, so you can pick up where you left off.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Deployment**: GitHub Pages
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd word-memorizer
+    ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+3.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+4.  **Build for production:**
+    ```bash
+    npm run build
+    ```
+
+## Deployment
+
+To deploy to GitHub Pages:
+
+```bash
+npm run deploy
 ```
