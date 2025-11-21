@@ -18,40 +18,40 @@ export const TypewriterDisplay: React.FC<TypewriterDisplayProps> = ({ word, type
                 shadow-2xl
             `}>
                 {/* Word Container */}
-                <div className="relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center">
+                <div className="relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center w-full px-4">
                     {/* Responsive Font Size - Smaller on mobile, huge on desktop */}
-                    <div className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative break-all">
-                        {/* Ghost Text (Sets the dimensions) */}
-                        <span className="text-gray-500/40 opacity-60 select-none">
-                            {word.word}
+                    <div className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative break-all text-center w-full">
+
+                        {/* Single Flow Rendering */}
+                        <span className={`
+                            bg-clip-text text-transparent bg-gradient-to-r 
+                            ${isError
+                                ? 'from-red-400 to-pink-500'
+                                : 'from-cyan-400 via-purple-400 to-pink-400'
+                            }
+                            animate-gradient
+                        `}>
+                            {typedText}
                         </span>
 
-                        {/* Typed Text Overlay + Cursor */}
-                        <div className="absolute left-0 top-0 w-full h-full pointer-events-none">
-                            <span className={`
-                                bg-clip-text text-transparent bg-gradient-to-r 
-                                ${isError
-                                    ? 'from-red-400 to-pink-500'
-                                    : 'from-cyan-400 via-purple-400 to-pink-400'
-                                }
-                                animate-gradient
-                            `}>
-                                {typedText}
-                            </span>
-                            {/* Animated Cursor with Glow */}
-                            <span className={`
-                                inline-block w-1 md:w-2 h-[0.8em] ml-1 align-middle
-                                ${isError ? 'bg-red-400' : 'bg-cyan-400'}
-                                animate-pulse-glow
-                                rounded-sm
-                            `}
-                                style={{
-                                    boxShadow: isError
-                                        ? '0 0 15px rgba(248, 113, 113, 0.8)'
-                                        : '0 0 15px rgba(34, 211, 238, 0.8)'
-                                }}
-                            />
-                        </div>
+                        {/* Animated Cursor */}
+                        <span className={`
+                            inline-block w-1 md:w-2 h-[0.8em] align-middle -ml-[1px] mr-[1px]
+                            ${isError ? 'bg-red-400' : 'bg-cyan-400'}
+                            animate-pulse-glow
+                            rounded-sm
+                        `}
+                            style={{
+                                boxShadow: isError
+                                    ? '0 0 15px rgba(248, 113, 113, 0.8)'
+                                    : '0 0 15px rgba(34, 211, 238, 0.8)'
+                            }}
+                        />
+
+                        {/* Untyped (Ghost) Text */}
+                        <span className="text-gray-500/40 opacity-60 select-none">
+                            {word.word.slice(typedText.length)}
+                        </span>
                     </div>
                 </div>
 
