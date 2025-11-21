@@ -13,7 +13,10 @@ A modern, aesthetic typing application designed to help you master vocabulary in
 ### ⌨️ Immersive Typing Experience
 - **Typewriter Aesthetic**: Satisfying typing sounds and visual feedback.
 - **Interactive UI**: Glassmorphism design with smooth animations and gradients.
-- **Mobile Friendly**: Optimized for both desktop and mobile devices with a responsive layout.
+
+### 📱 Mobile Optimized
+- **Responsive Design**: Seamlessly adapts to any screen size, from desktop to mobile phones.
+- **Touch Support**: Optimized virtual keyboard handling for a smooth typing experience on touch devices.
 
 ### 🧠 Learning Modes
 - **Learn Mode**: Practice new words from your selected language and level.
