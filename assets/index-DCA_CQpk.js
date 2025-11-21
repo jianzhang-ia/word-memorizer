@@ -51,16 +51,16 @@ Error generating stack: `+i.message+`
                 transition-all duration-300
                 ${t?"animate-shake border-red-500/50":""}
                 shadow-2xl
-            `,children:[y.jsx("div",{className:"relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center",children:y.jsxs("div",{className:"text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative break-all",children:[y.jsx("span",{className:"text-gray-500/40 opacity-60 select-none",children:e.word}),y.jsxs("div",{className:"absolute left-0 top-0 w-full h-full pointer-events-none",children:[y.jsx("span",{className:`
-                                bg-clip-text text-transparent bg-gradient-to-r 
-                                ${t?"from-red-400 to-pink-500":"from-cyan-400 via-purple-400 to-pink-400"}
-                                animate-gradient
-                            `,children:n}),y.jsx("span",{className:`
-                                inline-block w-1 md:w-2 h-[0.8em] ml-1 align-middle
-                                ${t?"bg-red-400":"bg-cyan-400"}
-                                animate-pulse-glow
-                                rounded-sm
-                            `,style:{boxShadow:t?"0 0 15px rgba(248, 113, 113, 0.8)":"0 0 15px rgba(34, 211, 238, 0.8)"}})]})]})}),y.jsxs("div",{className:"text-center space-y-4 mt-8 px-4",children:[y.jsx("div",{className:"glass rounded-2xl px-6 py-4 inline-block",children:y.jsx("p",{className:"text-xl md:text-2xl text-purple-300 font-medium tracking-wide",children:e.translation})}),y.jsx("p",{className:"text-sm md:text-base text-gray-400 italic max-w-2xl mx-auto leading-relaxed",children:e.definition})]})]})}),nf=({currentMode:e,onModeChange:n,learnedCount:t})=>{const i=[{id:"learn",label:"LEARN",description:"Practice all words"},{id:"memory",label:"MEMORY",description:`View learned (${t})`},{id:"review",label:"REVIEW",description:"Practice learned only"}];return y.jsx("nav",{className:"fixed top-4 left-0 right-0 z-20 flex justify-center px-4 animate-fade-in-up",children:y.jsx("div",{className:"glass rounded-full p-1.5 shadow-2xl max-w-fit",children:y.jsx("div",{className:"flex gap-1",children:i.map(a=>{const o=e===a.id,l=a.id!=="learn"&&t===0;return y.jsx("button",{onClick:()=>!l&&n(a.id),disabled:l,className:`
+            `,children:[y.jsx("div",{className:"relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center w-full px-4",children:y.jsxs("div",{className:"text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative break-all text-center w-full",children:[y.jsx("span",{className:`
+                            bg-clip-text text-transparent bg-gradient-to-r 
+                            ${t?"from-red-400 to-pink-500":"from-cyan-400 via-purple-400 to-pink-400"}
+                            animate-gradient
+                        `,children:n}),y.jsx("span",{className:`
+                            inline-block w-1 md:w-2 h-[0.8em] align-middle -ml-[1px] mr-[1px]
+                            ${t?"bg-red-400":"bg-cyan-400"}
+                            animate-pulse-glow
+                            rounded-sm
+                        `,style:{boxShadow:t?"0 0 15px rgba(248, 113, 113, 0.8)":"0 0 15px rgba(34, 211, 238, 0.8)"}}),y.jsx("span",{className:"text-gray-500/40 opacity-60 select-none",children:e.word.slice(n.length)})]})}),y.jsxs("div",{className:"text-center space-y-4 mt-8 px-4",children:[y.jsx("div",{className:"glass rounded-2xl px-6 py-4 inline-block",children:y.jsx("p",{className:"text-xl md:text-2xl text-purple-300 font-medium tracking-wide",children:e.translation})}),y.jsx("p",{className:"text-sm md:text-base text-gray-400 italic max-w-2xl mx-auto leading-relaxed",children:e.definition})]})]})}),nf=({currentMode:e,onModeChange:n,learnedCount:t})=>{const i=[{id:"learn",label:"LEARN",description:"Practice all words"},{id:"memory",label:"MEMORY",description:`View learned (${t})`},{id:"review",label:"REVIEW",description:"Practice learned only"}];return y.jsx("nav",{className:"fixed top-4 left-0 right-0 z-20 flex justify-center px-4 animate-fade-in-up",children:y.jsx("div",{className:"glass rounded-full p-1.5 shadow-2xl max-w-fit",children:y.jsx("div",{className:"flex gap-1",children:i.map(a=>{const o=e===a.id,l=a.id!=="learn"&&t===0;return y.jsx("button",{onClick:()=>!l&&n(a.id),disabled:l,className:`
                                     relative px-4 md:px-6 py-2 md:py-2.5 rounded-full font-mono text-[10px] md:text-xs tracking-wider
                                     transition-all duration-300 
                                     ${o?"bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 text-white shadow-lg":l?"text-gray-600 cursor-not-allowed":"text-gray-400 hover:text-white hover:bg-white/5"}
