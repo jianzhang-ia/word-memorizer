@@ -51,7 +51,7 @@ Error generating stack: `+i.message+`
                 transition-all duration-300
                 ${t?"animate-shake border-red-500/50":""}
                 shadow-2xl
-            `,children:[y.jsx("div",{className:"relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center w-full",children:y.jsxs("div",{className:"text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative break-all w-full text-center",children:[y.jsx("span",{className:"text-gray-500/40 opacity-60 select-none",children:e.word}),y.jsxs("div",{className:"absolute left-0 top-0 w-full h-full text-center pointer-events-none",children:[y.jsx("span",{className:`
+            `,children:[y.jsx("div",{className:"relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center",children:y.jsxs("div",{className:"text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative break-all",children:[y.jsx("span",{className:"text-gray-500/40 opacity-60 select-none",children:e.word}),y.jsxs("div",{className:"absolute left-0 top-0 w-full h-full pointer-events-none",children:[y.jsx("span",{className:`
                                 bg-clip-text text-transparent bg-gradient-to-r 
                                 ${t?"from-red-400 to-pink-500":"from-cyan-400 via-purple-400 to-pink-400"}
                                 animate-gradient
