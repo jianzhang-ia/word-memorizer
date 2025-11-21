@@ -4,26 +4,26 @@ A modern, aesthetic typing application designed to help you master vocabulary in
 
 ## Features
 
-### 🌍 Multi-Language Support
+### Multi-Language Support
 - **English**: Master advanced vocabulary with **C1** and **C2** level word lists.
   - **Translation Options**: Choose between **Japanese** and **Chinese** translations for English words.
 - **Finnish**: Learn Finnish vocabulary with **B1** and **B2** level collections.
   - Includes English translations.
 
-### ⌨️ Immersive Typing Experience
+### Immersive Typing Experience
 - **Typewriter Aesthetic**: Satisfying typing sounds and visual feedback.
 - **Interactive UI**: Glassmorphism design with smooth animations and gradients.
 
-### 📱 Mobile Optimized
+### Mobile Optimized
 - **Responsive Design**: Seamlessly adapts to any screen size, from desktop to mobile phones.
 - **Touch Support**: Optimized virtual keyboard handling for a smooth typing experience on touch devices.
 
-### 🧠 Learning Modes
+### Learning Modes
 - **Learn Mode**: Practice new words from your selected language and level.
 - **Review Mode**: Reinforce your memory by re-typing words you've already learned.
 - **Memory View**: Browse your collection of learned words to track your progress.
 
-### 📊 Progress Tracking
+### Progress Tracking
 - **Stats**: Real-time counter of words learned.
 - **Persistence**: Your progress is saved automatically, so you can pick up where you left off.
 
