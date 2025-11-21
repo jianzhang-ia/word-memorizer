@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useTypewriter } from './hooks/useTypewriter';
 import { useProgress } from './hooks/useProgress';
 import { useLearnedWords } from './hooks/useLearnedWords';
@@ -58,7 +58,7 @@ function App() {
     return wordsForLanguageAndLevel;
   }, [viewMode, learnedWords, wordsForLanguageAndLevel]);
 
-  const { currentWord, typedText, isError, nextWord, reset: resetGame } = useTypewriter({
+  const { currentWord, typedText, isError, nextWord, reset: resetGame, handleInput, handleKeyDown } = useTypewriter({
     words: wordsForMode,
     onWordComplete: (word) => {
       audioManager.playSuccessSound();
@@ -75,12 +75,58 @@ function App() {
     }
   });
 
+
+  // Wait, I need to import useRef.
+  // I will use a separate edit to add imports if needed, or just assume they are there?
+  // Imports are at the top. I can't see them in this chunk.
+  // I'll assume I need to add useRef to imports in a separate chunk or use React.useRef if I can't see imports.
+  // Actually, I viewed the file, imports are: import { useEffect, useState, useMemo } from 'react';
+  // I need to add useRef.
+
+  // Let's do the logic first.
+  const [inputValue, setInputValue] = useState(' ');
+  const hiddenInputRef = useRef<HTMLInputElement>(null);
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    // Don't focus if clicking a button or interactive element
+    if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('.interactive')) return;
+    if (showSettings || showResetConfirm) return;
+    hiddenInputRef.current?.focus();
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val.length > 1) {
+      // Typed a character
+      const char = val.slice(-1);
+      handleInput(char);
+    } else if (val.length < 1) {
+      // Backspace
+      handleInput('Backspace');
+    }
+    setInputValue(' ');
+  };
+
   // Play sound on key press (detected via typedText change)
   useEffect(() => {
     if (typedText.length > 0 && !isError) {
       audioManager.playKeySound();
     }
   }, [typedText, isError]);
+
+  // Global Keydown Handler (for desktop when input not focused)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // If the target is our hidden input, ignore it (let onChange handle it)
+      if (e.target === hiddenInputRef.current) return;
+
+      // Otherwise, handle it via the hook's handler
+      handleKeyDown(e);
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [handleKeyDown]);
 
   const handleResetClick = () => {
     setShowResetConfirm(true);
@@ -119,7 +165,7 @@ function App() {
   // Show memory view when in memory mode
   if (viewMode === 'memory') {
     return (
-      <div className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden">
+      <div className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden z-10">
         <Navigation
           currentMode={viewMode}
           onModeChange={handleModeChange}
@@ -138,7 +184,24 @@ function App() {
   if (!currentWord) return <div className="text-white">Loading...</div>;
 
   return (
-    <div className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden">
+    <div
+      className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden z-10"
+      onClick={handleContainerClick}
+    >
+      {/* Hidden Input for Mobile Keyboard */}
+      <input
+        ref={hiddenInputRef}
+        type="text"
+        className="absolute opacity-0 top-0 left-0 h-0 w-0 pointer-events-none"
+        value={inputValue}
+        onChange={handleInputChange}
+        autoFocus
+        inputMode="text"
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck="false"
+      />
 
       {/* Navigation */}
       <Navigation
@@ -148,25 +211,19 @@ function App() {
       />
 
       {/* Header / Stats - Glass Panels */}
-      <div className="fixed top-20 md:top-24 left-0 right-0 flex flex-wrap justify-between items-start px-4 md:px-6 lg:px-12 z-10 animate-fade-in-up gap-2">
+      <div className="fixed top-20 md:top-24 left-0 right-0 flex flex-wrap justify-between items-start px-4 md:px-6 lg:px-12 z-10 animate-fade-in-up gap-2 pointer-events-none">
         {/* Left Stats */}
-        <div className="flex gap-2 md:gap-3">
+        <div className="flex gap-2 md:gap-3 pointer-events-auto">
           <div className="glass rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-lg">
             <span className="block text-[10px] md:text-xs uppercase tracking-widest text-gray-500 mb-0.5 md:mb-1">Learned</span>
             <span className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-cyan-300">
               {progress.wordsLearned}
             </span>
           </div>
-          <div className="glass rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-lg">
-            <span className="block text-[10px] md:text-xs uppercase tracking-widest text-gray-500 mb-0.5 md:mb-1">Streak</span>
-            <span className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-              {progress.streak}
-            </span>
-          </div>
         </div>
 
         {/* Right Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 pointer-events-auto">
           {/* Settings Button */}
           <button
             onClick={() => setShowSettings(true)}
@@ -249,7 +306,7 @@ function App() {
           <div className="glass rounded-3xl p-8 max-w-md w-full shadow-2xl border-red-500/30">
             <h3 className="text-2xl font-bold text-white mb-4">Reset Progress?</h3>
             <p className="text-gray-300 mb-8">
-              This will delete all your learned words and reset your streak. This action cannot be undone.
+              This will delete all your learned words. This action cannot be undone.
             </p>
             <div className="flex gap-4 justify-end">
               <button

@@ -4,15 +4,11 @@ const STORAGE_KEY = 'word-memorizer-progress';
 
 export interface ProgressData {
     wordsLearned: number;
-    streak: number;
-    bestStreak: number;
 }
 
 export const useProgress = () => {
     const [progress, setProgress] = useState<ProgressData>({
-        wordsLearned: 0,
-        streak: 0,
-        bestStreak: 0
+        wordsLearned: 0
     });
 
     useEffect(() => {
@@ -32,31 +28,22 @@ export const useProgress = () => {
     };
 
     const incrementProgress = () => {
-        const newStreak = progress.streak + 1;
         const newProgress = {
-            wordsLearned: progress.wordsLearned + 1,
-            streak: newStreak,
-            bestStreak: Math.max(newStreak, progress.bestStreak)
+            wordsLearned: progress.wordsLearned + 1
         };
         saveProgress(newProgress);
     };
 
-    const resetStreak = () => {
-        saveProgress({
-            ...progress,
-            streak: 0
-        });
-    };
+
 
     const resetAll = () => {
-        const initial = { wordsLearned: 0, streak: 0, bestStreak: 0 };
+        const initial = { wordsLearned: 0 };
         saveProgress(initial);
     };
 
     return {
         progress,
         incrementProgress,
-        resetStreak,
         resetAll
     };
 };

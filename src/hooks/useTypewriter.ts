@@ -21,13 +21,8 @@ export const useTypewriter = ({ words, onWordComplete, onMistake }: UseTypewrite
 
     const currentWord = shuffledWords[currentWordIndex];
 
-    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const handleInput = useCallback((key: string) => {
         if (!currentWord) return;
-
-        const { key } = e;
-
-        // Ignore modifier keys
-        if (e.ctrlKey || e.altKey || e.metaKey) return;
 
         // Handle Backspace
         if (key === 'Backspace') {
@@ -36,7 +31,7 @@ export const useTypewriter = ({ words, onWordComplete, onMistake }: UseTypewrite
             return;
         }
 
-        // Ignore non-character keys (except space if needed, but usually words don't have spaces)
+        // Ignore non-character keys (except space if needed)
         if (key.length !== 1) return;
 
         const targetChar = currentWord.word[typedText.length];
@@ -47,24 +42,22 @@ export const useTypewriter = ({ words, onWordComplete, onMistake }: UseTypewrite
             setIsError(false);
 
             if (newTypedText === currentWord.word) {
-                // Word complete
                 onWordComplete(currentWord);
-                // Reset for next word (delayed slightly by parent or effect?)
-                // Actually, let's handle transition here or let parent trigger it.
-                // For now, we'll just reset state immediately or wait for parent to call nextWord.
             }
         } else {
             setIsError(true);
             onMistake();
-            // Optional: shake effect trigger
             setTimeout(() => setIsError(false), 300);
         }
     }, [currentWord, typedText, onWordComplete, onMistake]);
 
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleKeyDown]);
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        // Ignore modifier keys
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        handleInput(e.key);
+    }, [handleInput]);
+
+
 
     const nextWord = useCallback(() => {
         setTypedText('');
@@ -83,6 +76,8 @@ export const useTypewriter = ({ words, onWordComplete, onMistake }: UseTypewrite
         typedText,
         isError,
         nextWord,
-        reset
+        reset,
+        handleInput,
+        handleKeyDown
     };
 };
