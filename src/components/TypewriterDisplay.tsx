@@ -18,16 +18,16 @@ export const TypewriterDisplay: React.FC<TypewriterDisplayProps> = ({ word, type
                 shadow-2xl
             `}>
                 {/* Word Container */}
-                <div className="relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center">
-                    {/* Responsive Font Size */}
-                    <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative">
+                <div className="relative font-mono font-bold min-h-[120px] md:min-h-[160px] flex items-center justify-center w-full">
+                    {/* Responsive Font Size - Smaller on mobile, huge on desktop */}
+                    <div className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-wider relative break-all w-full text-center">
                         {/* Ghost Text (Sets the dimensions) */}
                         <span className="text-gray-500/40 opacity-60 select-none">
                             {word.word}
                         </span>
 
                         {/* Typed Text Overlay + Cursor */}
-                        <div className="absolute left-0 top-0 whitespace-nowrap">
+                        <div className="absolute left-0 top-0 w-full h-full text-center pointer-events-none">
                             <span className={`
                                 bg-clip-text text-transparent bg-gradient-to-r 
                                 ${isError
