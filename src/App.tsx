@@ -185,7 +185,7 @@ function App() {
   // Show memory view when in memory mode
   if (viewMode === 'memory') {
     return (
-      <div className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden z-10">
+      <div className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-[100dvh] relative overflow-y-auto z-10">
         <Navigation
           currentMode={viewMode}
           onModeChange={handleModeChange}
@@ -205,7 +205,7 @@ function App() {
 
   return (
     <div
-      className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-screen relative overflow-hidden z-10"
+      className="w-full mx-auto p-4 flex flex-col items-center justify-center min-h-[100dvh] relative overflow-y-auto z-10"
       onClick={handleContainerClick}
     >
       {/* Hidden Input for Mobile Keyboard */}
