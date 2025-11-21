@@ -128,6 +128,26 @@ function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [handleKeyDown]);
 
+  // Initialize audio on first interaction (required for mobile)
+  useEffect(() => {
+    const initAudio = () => {
+      audioManager.initialize();
+      window.removeEventListener('click', initAudio);
+      window.removeEventListener('touchstart', initAudio);
+      window.removeEventListener('keydown', initAudio);
+    };
+
+    window.addEventListener('click', initAudio);
+    window.addEventListener('touchstart', initAudio);
+    window.addEventListener('keydown', initAudio);
+
+    return () => {
+      window.removeEventListener('click', initAudio);
+      window.removeEventListener('touchstart', initAudio);
+      window.removeEventListener('keydown', initAudio);
+    };
+  }, []);
+
   const handleResetClick = () => {
     setShowResetConfirm(true);
   };

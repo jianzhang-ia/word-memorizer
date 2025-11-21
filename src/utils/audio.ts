@@ -12,6 +12,21 @@ class AudioManager {
     }
 
     /**
+     * Initialize audio context on first user interaction
+     * Required for mobile browsers
+     */
+    initialize() {
+        try {
+            const ctx = this.getContext();
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+        } catch (e) {
+            // Ignore errors during initialization
+        }
+    }
+
+    /**
      * Play a crisp, mechanical typewriter key sound
      * Multi-layered for richness
      */
